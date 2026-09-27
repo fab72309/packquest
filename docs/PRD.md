@@ -1,9 +1,9 @@
 # PRD — PackQuest
 
-**Version :** 1.1 — révision de cohérence  
-**Statut :** document de travail pour le MVP  
-**Date :** 26 septembre 2026  
-**Plateforme cible :** application web responsive / PWA, puis Capacitor pour iOS et Android  
+**Version :** 1.1 — révision de cohérence\
+**Statut :** document de travail pour le MVP\
+**Date :** 26 septembre 2026\
+**Plateforme cible :** application web responsive / PWA, puis Capacitor pour iOS et Android\
 **Stack cible :** React, TypeScript, Vite, Tailwind CSS, React Router, Lucide React, Supabase, Netlify
 
 Cette version clarifie le périmètre et les décisions déjà présentes dans le PRD fourni. Elle s’aligne sur [`AGENTS.md`](../AGENTS.md). Les choix notés « à confirmer » ne doivent pas être transformés silencieusement en règles de production.
