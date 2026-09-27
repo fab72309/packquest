@@ -1,0 +1,24 @@
+.join-page { display: grid; min-height: 100vh; place-items: center; padding: 15px; background: radial-gradient(circle at 10% 0, #fff0c9, transparent 34rem), #f7f5ed; color: var(--quest-ink); }
+.join-card { width: min(100%, 510px); padding: clamp(20px, 4vw, 35px); border: 1px solid #d6e0d3; border-radius: 22px; background: #fffefa; box-shadow: 6px 8px 0 #e1e9dc; }
+.join-back { display: inline-block; margin-bottom: 19px; color: #396a56; font-size: .78rem; font-weight: 750; }
+.join-hero-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 15px; background: #ffe1a4; color: #5f3e18; }
+.join-eyebrow { margin: 20px 0 7px; color: #8e6428; font-size: .68rem; font-weight: 850; letter-spacing: .15em; }
+.join-card h1 { margin: 0; font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.08; letter-spacing: -.055em; }
+.join-intro { margin: 12px 0 20px; color: #536c60; font-size: .87rem; line-height: 1.55; }
+.join-video-wrap { position: relative; display: grid; min-height: 180px; overflow: hidden; place-items: center; border: 2px dashed #bccdbb; border-radius: 13px; background: #edf3eb; }
+.join-video { display: none; width: 100%; max-height: 300px; object-fit: cover; }
+.join-video.is-active { display: block; }
+.join-video-placeholder { padding: 18px; color: #607867; font-size: .76rem; text-align: center; }
+.join-video.is-active + .join-video-placeholder { position: absolute; bottom: 10px; left: 50%; width: max-content; max-width: 95%; padding: 7px 11px; border-radius: 8px; background: rgb(16 38 50 / 80%); color: white; transform: translateX(-50%); }
+.join-primary, .join-secondary { width: 100%; margin-top: 13px; }
+.join-primary { background: var(--quest-ink); color: white; }
+.join-secondary { border-color: #c3d2c4; background: #f1f6ed; }
+.join-manual { margin-top: 24px; padding-top: 20px; border-top: 1px solid #dce5dc; }
+.join-manual p { display: flex; align-items: center; gap: 8px; margin: 0 0 9px; color: #425f51; font-size: .79rem; font-weight: 800; }
+.join-manual form { display: flex; gap: 8px; }
+.join-manual input { width: 100%; min-width: 0; min-height: 47px; padding: 9px 11px; border: 1px solid #c1d1c3; border-radius: 10px; }
+.join-manual button { display: grid; width: 47px; flex: 0 0 47px; place-items: center; border: 0; border-radius: 10px; background: #ffca69; cursor: pointer; }
+.join-reassurance { display: flex; align-items: center; gap: 8px; margin: 20px 0 0; color: #52705c; font-size: .72rem; }
+.join-status, .join-error { margin: 13px 0 0; padding: 10px; border-radius: 9px; font-size: .76rem; }
+.join-status { background: #e8f3e9; color: #286044; }.join-error { background: #ffebe4; color: #923b2c; }
+.join-existing { display: inline-block; min-height: 44px; margin-top: 8px; padding: 11px 0; color: #26624b; font-size: .78rem; font-weight: 800; }

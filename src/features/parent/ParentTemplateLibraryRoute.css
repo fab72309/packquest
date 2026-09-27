@@ -1,0 +1,33 @@
+.template-account-page { width: min(100%, 1180px); margin: 0 auto; }
+.template-unsaved-overlay { position: fixed; z-index: 40; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(7 26 34 / 66%); }
+.template-unsaved-dialog { width: min(100%, 430px); padding: 25px; border: 2px solid var(--quest-ink); border-radius: 16px; background: #fffefa; box-shadow: 8px 8px 0 rgb(7 26 34 / 28%); }
+.template-unsaved-dialog h2 { margin: 0 0 8px; font-size: 1.4rem; }
+.template-unsaved-dialog p { margin: 0; color: #536b62; font-size: .86rem; line-height: 1.5; }
+.template-unsaved-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.template-unsaved-actions button { min-height: 44px; flex: 1 1 170px; padding: 9px 12px; border: 2px solid var(--quest-ink); border-radius: 9px; background: #fffefa; color: var(--quest-ink); font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; }
+.template-unsaved-actions button:first-child { background: var(--quest-gold); }
+.template-account-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin: 0 0 18px; color: #728077; font-size: .72rem; }
+.template-account-toolbar button { display: inline-flex; min-height: 38px; align-items: center; gap: 7px; padding: 0 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: #536258; font: inherit; font-weight: 700; cursor: pointer; }
+.template-account-toolbar button:hover { border-color: #b5c9b8; color: var(--forest); }
+.template-account-state, .template-auth-card { width: min(100%, 520px); margin: 50px auto; padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: 0 12px 36px rgb(28 43 34 / 6%); }
+.template-account-state__eyebrow { margin: 0 0 8px; color: #87958a; font-size: .64rem; font-weight: 850; letter-spacing: .14em; }
+.template-account-state h1, .template-auth-card h1 { margin: 0 0 9px; color: var(--ink); font-size: 1.7rem; letter-spacing: -.055em; }
+.template-account-state p { color: #65736a; font-size: .85rem; line-height: 1.6; }
+.template-account-state pre { overflow-x: auto; margin: 18px 0; padding: 14px; border-radius: 12px; background: #f2f5ef; color: #33483a; font-size: .78rem; }
+.template-account-state .button { text-decoration: none; }
+.template-auth-card { margin-top: 7vh; }
+.template-auth-form { display: grid; gap: 15px; margin-top: 21px; }
+.template-auth-form label { display: grid; gap: 6px; color: #57665c; font-size: .74rem; font-weight: 720; }
+.template-auth-form input { min-height: 46px; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 11px; background: #fff; color: var(--ink); font: inherit; font-weight: 500; }
+.template-auth-form input:focus-visible, .template-auth-toggle:focus-visible, .template-account-toolbar button:focus-visible { outline: 3px solid #83b85e; outline-offset: 2px; }
+.template-auth-form .button { margin-top: 4px; }
+.template-auth-form .button:disabled { cursor: wait; opacity: .7; }
+.template-auth-toggle { margin: 18px 0 0; padding: 0; border: 0; background: none; color: var(--forest); font: inherit; font-size: .76rem; font-weight: 750; cursor: pointer; }
+.template-account-error, .template-account-success { margin: 14px 0 0; padding: 11px 13px; border-radius: 10px; font-size: .74rem; line-height: 1.5; }
+.template-account-error { background: var(--coral-soft); color: #9f493a; }
+.template-account-success { background: var(--forest-soft); color: var(--forest); }
+
+@media (max-width: 520px) {
+  .template-account-toolbar { justify-content: space-between; margin-bottom: 12px; }
+  .template-account-state, .template-auth-card { margin: 24px auto; padding: 21px 17px; }
+}
