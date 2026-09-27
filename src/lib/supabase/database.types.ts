@@ -450,6 +450,7 @@ export type Database = {
           p_child_id: string
           p_owner_id: string
           p_period?: string | null
+          p_selected_item_ids?: string[] | null
           p_template_id: string
           p_title?: string | null
         }

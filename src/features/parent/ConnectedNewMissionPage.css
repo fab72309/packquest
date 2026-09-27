@@ -1,1 +1,16 @@
-.connected-new-page { max-width: 760px; }.connected-new-card { display: grid; justify-items: start; gap: 15px; padding: 25px; border: 1px solid #d0ddd4; border-radius: 16px; background: #fffefa; box-shadow: 4px 5px 0 #e3eae2; }.connected-new-card h2, .connected-new-card p { margin: 0; }.connected-new-card p { color: #567163; font-size: .81rem; line-height: 1.5; }.connected-new-form { gap: 17px; }.connected-new-form label { display: grid; width: 100%; gap: 7px; color: #355a49; font-size: .8rem; font-weight: 800; }.connected-new-form input, .connected-new-form select { width: 100%; min-height: 48px; padding: 9px 12px; border: 1px solid #becec0; border-radius: 9px; background: white; color: var(--quest-ink); font-weight: 500; }.connected-new-form .button { width: 100%; }.connected-new-form .connected-new-preview { margin: -8px 0 0; font-size: .72rem; }
+.connected-new-page { max-width: 850px; }
+.connected-new-card { display: grid; justify-items: start; gap: 15px; padding: 25px; border: 1px solid #d0ddd4; border-radius: 16px; background: #fffefa; box-shadow: 4px 5px 0 #e3eae2; }
+.connected-new-card > h2, .connected-new-card > p { margin: 0; }
+.connected-new-card > p { color: #567163; font-size: .81rem; line-height: 1.5; }
+.connected-new-form { gap: 16px; }
+.connected-new-form > label { display: grid; width: 100%; gap: 7px; color: #355a49; font-size: .8rem; font-weight: 800; }
+.connected-new-form > label > input, .connected-new-form > label > select { width: 100%; min-height: 48px; padding: 9px 12px; border: 1px solid #becec0; border-radius: 9px; outline: none; background: white; color: var(--quest-ink); font: inherit; font-weight: 500; }
+.connected-new-form > label > input:focus, .connected-new-form > label > select:focus { border-color: #4b8d6a; box-shadow: 0 0 0 3px #d8eee4; }
+.connected-new-form .account-message { margin: 0; }
+.connected-new-form > .button { width: 100%; margin-top: 2px; }
+.connected-new-form > label > input:disabled, .connected-new-form > label > select:disabled { cursor: not-allowed; background: #f1f3ef; color: #78887e; }
+
+@media (max-width: 560px) {
+  .connected-new-card { gap: 13px; padding: 19px 14px; }
+  .connected-new-form { gap: 14px; }
+}

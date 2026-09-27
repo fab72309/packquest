@@ -12,7 +12,7 @@ type DemoMissionContextValue = {
   finishPreparation: () => void
   sendHelpRequest: (itemId: string, message: string) => void
   replyToHelpRequest: (itemId: string, response: string) => void
-  createDemoMission: (template: DemoTemplate, title: string, period: string) => void
+  createDemoMission: (template: DemoTemplate, title: string, period: string, selectedItemIds: string[]) => void
   resetDemo: () => void
 }
 
@@ -110,14 +110,15 @@ export function DemoMissionProvider({ children }: { children: ReactNode }) {
     }))
   }, [])
 
-  const createDemoMission = useCallback((template: DemoTemplate, title: string, period: string) => {
+  const createDemoMission = useCallback((template: DemoTemplate, title: string, period: string, selectedItemIds: string[]) => {
+    const selectedIds = new Set(selectedItemIds)
     setState({
       mission: {
         title: title.trim() || template.name,
         period: period.trim() || template.period,
         templateName: template.name,
         stage: 'sent',
-        items: template.items.map((item) => ({ ...item, status: 'pending' })),
+        items: template.items.filter((item) => selectedIds.has(item.id)).map((item) => ({ ...item, status: 'pending' })),
       },
       rewardedItemIds: [],
       helpRequests: [],

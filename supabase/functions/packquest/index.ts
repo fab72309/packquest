@@ -42,6 +42,15 @@ function uuid(body: Payload, key: string): string | null {
     ? value : null
 }
 
+function uuidArray(value: unknown): string[] | null {
+  if (!Array.isArray(value) || value.length === 0) return null
+  const ids = value.filter((entry): entry is string =>
+    typeof entry === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(entry),
+  )
+  if (ids.length !== value.length || new Set(ids).size !== ids.length) return null
+  return ids
+}
+
 function capability(body: Payload, key: string): string | null {
   const value = field(body, key, 43)
   return value && /^[A-Za-z0-9_-]{43}$/.test(value) ? value : null
@@ -221,7 +230,9 @@ Deno.serve(async (request) => {
     if (action === 'create_mission') {
       const childId = uuid(body, 'child_id')
       const templateId = uuid(body, 'template_id')
+      const selectedItemIds = body.item_ids === undefined ? null : uuidArray(body.item_ids)
       if (!childId || !templateId) return fail('Profil ou modèle invalide.', 400, origin)
+      if (body.item_ids !== undefined && !selectedItemIds) return fail('Sélection des affaires invalide.', 400, origin)
       const title = body.title === undefined ? null : field(body, 'title', 100)
       const period = body.period === undefined ? null : field(body, 'period', 80)
       if ((body.title !== undefined && title === null) ||
@@ -230,7 +241,7 @@ Deno.serve(async (request) => {
       }
       const { data, error } = await service.rpc('packquest_create_mission', {
         p_owner_id: ownerId, p_child_id: childId, p_template_id: templateId,
-        p_title: title, p_period: period,
+        p_title: title, p_period: period, p_selected_item_ids: selectedItemIds,
       })
       if (error) return databaseError(error.code, origin)
       return json({ mission: data }, 200, origin)
