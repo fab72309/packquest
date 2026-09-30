@@ -11,7 +11,7 @@
   </head>
   <body>
     <main>
-      <small>NOTICE DU SERVICE CONNECTÉ · Mise à jour : 29 septembre 2026</small>
+      <small>NOTICE DU SERVICE CONNECTÉ · Mise à jour : 30 septembre 2026</small>
       <h1>Confidentialité de PackQuest</h1>
       <p>PackQuest aide un parent et son enfant à préparer une liste d’affaires. Les profils enfants sont créés et gérés par un parent ou représentant légal.</p>
       <h2>Responsable et contact</h2>
@@ -22,12 +22,13 @@
         <li>Profil enfant : prénom d’usage ou pseudonyme et avatar choisis par le parent.</li>
         <li>Données de famille : modèles, missions, affaires, états de checklist, historique et, si le parent l’active, courts messages d’aide associés à une affaire.</li>
         <li>Sécurité et synchronisation : hachages de jetons d’appairage et d’appareil, dates de création/révocation et dernière connexion, ainsi que reçus techniques utilisés pour éviter les doublons lors de la synchronisation.</li>
+        <li>Journaux techniques du service connecté : l’infrastructure Supabase peut journaliser l’adresse IP des requêtes et en déduire une zone approximative (pays, région, ville ou code postal), ainsi que l’agent utilisateur, la route, la méthode et des horodatages nécessaires au fonctionnement, au diagnostic et à la sécurité.</li>
         <li>Sur l’appareil : session parent, copie locale des missions de l’enfant et changements en attente hors ligne.</li>
       </ul>
       <p>La date de naissance est vérifiée uniquement sur l’appareil pour ouvrir l’espace adulte ou enfant. Elle n’est ni enregistrée ni envoyée. Le résultat adulte reste temporairement dans la session et est supprimé quand le parent se déconnecte. Lors d’un scan, l’image de la caméra sert à reconnaître le QR code sur l’appareil ; PackQuest ne l’enregistre pas et ne l’envoie pas.</p>
       <h2>Utilisation et destinataires</h2>
       <p>Ces données servent à gérer le compte parent, relier les appareils, préparer et synchroniser les missions, afficher la progression, répondre aux demandes d’aide autorisées et protéger l’accès au foyer. Les données ne sont ni vendues ni utilisées pour de la publicité ciblée. PackQuest n’intègre pas de SDK publicitaire ni d’outil de mesure d’audience.</p>
-      <p>Supabase fournit l’authentification, la base de données et les fonctions serveur. La base PackQuest est configurée à Paris (eu-west-3). Google traite les informations de connexion si le parent choisit la connexion Google. Les journaux et traitements des fournisseurs suivent aussi leurs propres conditions : <a href="https://supabase.com/privacy">notice de Supabase</a> et <a href="https://policies.google.com/privacy">notice de Google</a>.</p>
+      <p>Supabase fournit l’authentification, la base de données, les fonctions serveur et les journaux techniques. La base PackQuest est configurée à Paris (eu-west-3). L’application Android ne demande pas l’autorisation de localisation et n’accède pas au GPS : la zone indiquée dans certains journaux est estimée par l’infrastructure à partir de l’adresse IP transmise avec la requête. Google traite les informations de connexion si le parent choisit la connexion Google. Les traitements des fournisseurs suivent aussi leurs propres conditions : <a href="https://supabase.com/privacy">notice de Supabase</a> et <a href="https://policies.google.com/privacy">notice de Google</a>.</p>
       <p>Les demandes d’aide sont désactivées par défaut. Seul un adulte connecté à l’espace parent peut les activer. Un rappel de sécurité est affiché à l’enfant avant l’envoi d’un message.</p>
       <h2>Conservation et droits</h2>
       <p>Les données actives du foyer restent associées au compte parent jusqu’à sa suppression. Le parent peut retirer un appareil à tout moment. La suppression du compte efface les données du foyer dans la base active. Une copie déjà présente sur un appareil hors ligne peut y rester jusqu’à ce que l’enfant retire la famille de l’appareil ou que les données locales de PackQuest soient effacées.</p>
