@@ -1,0 +1,101 @@
+apply plugin: 'com.android.application'
+
+// Keep the private upload key and passwords outside the repository.
+def uploadSigningFile = new File(System.getenv('PACKQUEST_SIGNING_PROPERTIES') ?: "${System.getProperty('user.home')}/.config/packquest-android-upload/signing.properties")
+def uploadSigning = new Properties()
+if (uploadSigningFile.isFile()) {
+    uploadSigningFile.withInputStream { uploadSigning.load(it) }
+    ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].each { name ->
+        if (!uploadSigning.getProperty(name)) throw new GradleException("Missing Android upload signing property: ${name}")
+    }
+}
+
+// Refuse an unsigned artifact or an accidental replacement of the Play upload key.
+gradle.taskGraph.whenReady { graph ->
+    def signedTasks = ['bundleRelease', 'assembleRelease', 'assembleSideload', 'packageRelease', 'packageSideload', 'signReleaseBundle']
+    if (graph.allTasks.any { it.project == project && it.name in signedTasks }) {
+        if (!uploadSigningFile.isFile()) {
+            throw new GradleException("Android signing configuration missing: ${uploadSigningFile}. Restore the existing key; do not generate a replacement.")
+        }
+        def keyFile = file(uploadSigning.getProperty('storeFile'))
+        if (!keyFile.isFile()) throw new GradleException('Android upload key missing. Restore the existing backup.')
+        def keyStore = java.security.KeyStore.getInstance(keyFile, uploadSigning.getProperty('storePassword').toCharArray())
+        def alias = uploadSigning.getProperty('keyAlias')
+        if (!keyStore.isKeyEntry(alias)) throw new GradleException('Android upload private key not found for the configured alias.')
+        def certificate = keyStore.getCertificate(alias)
+        def fingerprint = java.security.MessageDigest.getInstance('SHA-256').digest(certificate.encoded).encodeHex().toString()
+        if (fingerprint != '188b9b91792e9e5b2a92bd76f0f0cb5001cd7ba3a65528b6739be189788cd78f') {
+            throw new GradleException('Android upload certificate differs from the registered Play certificate. Restore the PackQuest key.')
+        }
+    }
+}
+
+android {
+    namespace = "com.packquest.app"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.packquest.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 4
+        versionName "1.0.3"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        if (uploadSigningFile.isFile()) {
+            upload {
+                storeFile file(uploadSigning.getProperty('storeFile'))
+                storePassword uploadSigning.getProperty('storePassword')
+                keyAlias uploadSigning.getProperty('keyAlias')
+                keyPassword uploadSigning.getProperty('keyPassword')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            if (uploadSigningFile.isFile()) signingConfig signingConfigs.upload
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        sideload {
+            initWith release
+            applicationIdSuffix ".test"
+            versionNameSuffix "-test"
+            matchingFallbacks = ['release']
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

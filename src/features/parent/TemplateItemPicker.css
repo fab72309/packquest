@@ -1,0 +1,32 @@
+.mission-item-picker { width: 100%; display: grid; gap: 12px; padding: 17px; border: 1px solid #d7e3d8; border-radius: 14px; background: #f9fbf6; }
+.mission-item-picker__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.mission-item-picker__heading h2 { margin: 0; color: var(--quest-ink); font-size: .98rem; letter-spacing: -.025em; }
+.mission-item-picker__heading p { margin: 4px 0 0; color: #61786d; font-size: .75rem; line-height: 1.45; }
+.mission-item-picker__count { flex: 0 0 auto; padding: 7px 9px; border-radius: 8px; background: #e8f3e9; color: #315f4b; font-size: .68rem; font-weight: 800; }
+.mission-item-picker__actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.mission-item-picker__actions button { min-height: 40px; padding: 0 11px; border: 1px solid #bed2c2; border-radius: 9px; background: #fffefa; color: #315c4b; font: inherit; font-size: .71rem; font-weight: 800; cursor: pointer; }
+.mission-item-picker__actions button:hover:not(:disabled) { border-color: #4b8d6a; background: #edf7ee; }
+.mission-item-picker__actions button:disabled { cursor: default; opacity: .55; }
+.mission-item-picker__categories { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.mission-item-picker__category { min-width: 0; margin: 0; padding: 11px; border: 1px solid #e0e9df; border-radius: 11px; background: #fffefa; }
+.mission-item-picker__category legend { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; padding: 0 2px; color: #36584b; font-size: .73rem; font-weight: 850; }
+.mission-item-picker__category legend small { color: #75897d; font-size: .65rem; font-weight: 750; }
+.mission-item-picker__items { display: grid; gap: 6px; margin-top: 8px; }
+.mission-item-picker__item { display: flex; min-width: 0; min-height: 48px; align-items: center; gap: 9px; padding: 7px 8px; border: 1px solid transparent; border-radius: 9px; background: #f6f8f3; cursor: pointer; }
+.mission-item-picker__item.is-selected { border-color: #d7e9da; background: #edf6ee; }
+.mission-item-picker__item input { width: 20px; height: 20px; flex: 0 0 auto; margin: 0; accent-color: #27654e; }
+.mission-item-picker__item-copy { display: grid; min-width: 0; gap: 2px; }
+.mission-item-picker__item-copy strong { overflow: hidden; color: #2e473a; font-size: .74rem; font-weight: 750; text-overflow: ellipsis; }
+.mission-item-picker__item-copy small { color: #738478; font-size: .64rem; }
+.mission-item-picker__essential { flex: 0 0 auto; margin-left: auto; padding: 4px 6px; border-radius: 6px; background: #fff0d3; color: #75551e; font-size: .57rem; font-weight: 800; }
+.mission-item-picker__empty { margin: 0; padding: 14px; border: 1px dashed #c9d8c9; border-radius: 10px; color: #5d7468; font-size: .75rem; line-height: 1.5; }
+.mission-item-picker__selection-help { margin: 0; color: #8a573c; font-size: .72rem; font-weight: 750; }
+.mission-item-picker button:focus-visible, .mission-item-picker input:focus-visible { outline: 3px solid #83b85e; outline-offset: 2px; }
+
+@media (max-width: 600px) {
+  .mission-item-picker { padding: 13px 10px; }
+  .mission-item-picker__heading { display: grid; }
+  .mission-item-picker__count { justify-self: start; }
+  .mission-item-picker__categories { grid-template-columns: 1fr; }
+  .mission-item-picker__essential { font-size: .54rem; }
+}
