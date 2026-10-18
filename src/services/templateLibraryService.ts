@@ -182,6 +182,42 @@ export async function loadTemplateLibrary(client: Client, userId: string): Promi
   }))
 }
 
+export async function createTemplate(client: Client, userId: string): Promise<TemplateDefinition> {
+  const family = await getOrCreateFamily(client, userId)
+  const { data: lastTemplate, error: positionError } = await client
+    .from('templates')
+    .select('position')
+    .eq('family_id', family.id)
+    .order('position', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (positionError) throw positionError
+
+  const { data: created, error: createError } = await client
+    .from('templates')
+    .insert({
+      family_id: family.id,
+      name: 'Nouvelle liste',
+      description: '',
+      period: 'Semaine prochaine',
+      position: (lastTemplate?.position ?? -1) + 1,
+    })
+    .select('*')
+    .single()
+
+  if (createError) throw createError
+
+  return {
+    id: created.id,
+    name: created.name,
+    description: created.description,
+    period: created.period,
+    version: created.version,
+    items: [],
+  }
+}
+
 export async function saveTemplate(client: Client, template: TemplateDefinition): Promise<number> {
   const { data, error } = await client.rpc('save_template_content', {
     p_template_id: template.id,

@@ -17,6 +17,9 @@
 .account-form .button { width: 100%; }
 .account-privacy { display: flex; align-items: flex-start; gap: 9px; margin: 0; padding: 13px; border-radius: 10px; background: #eaf6ec; color: #315a47; font-size: .74rem; line-height: 1.5; }
 .account-privacy svg { flex: 0 0 auto; }
+.account-policy-ack { display: flex; align-items: flex-start; gap: 9px; margin: 0 0 14px; color: #486358; font-size: .75rem; line-height: 1.5; }
+.account-policy-ack input { width: 19px; height: 19px; flex: 0 0 auto; accent-color: #28745a; }
+.account-policy-ack a { color: #256b53; font-weight: 750; }
 .account-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 19px; }
 .account-links button, .account-mode-link, .account-signout { border: 0; background: none; color: #256b53; font: inherit; font-size: .78rem; font-weight: 750; cursor: pointer; }
 .account-mode-link { margin-top: 18px; padding: 0; }
@@ -30,4 +33,14 @@
 .account-action strong { font-size: .85rem; }
 .account-action small { margin-top: 4px; color: #5a7166; font-size: .7rem; line-height: 1.4; }
 .account-signout { display: inline-flex; min-height: 44px; align-items: center; gap: 7px; margin-top: 18px; padding: 0; }
+.account-danger { display: grid; gap: 11px; margin-top: 26px; padding: 16px; border: 1px solid #e5b6ac; border-radius: 13px; background: #fff7f4; }
+.account-danger h2 { margin: 0; color: #803b2d; font-size: .95rem; }
+.account-danger p { margin: 0; color: #6f4942; font-size: .73rem; line-height: 1.55; }
+.account-danger__button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: 7px; padding: 9px 12px; border: 1px solid #a84b3d; border-radius: 9px; background: #a84b3d; color: white; font: inherit; font-size: .75rem; font-weight: 800; cursor: pointer; }
+.account-danger__button:disabled { cursor: not-allowed; opacity: .55; }
+.account-danger__form { display: grid; gap: 12px; }
+.account-danger__form label { display: grid; gap: 7px; color: #603c35; font-size: .75rem; font-weight: 750; }
+.account-danger__form input { min-height: 44px; padding: 9px 11px; border: 1px solid #d6aaa1; border-radius: 9px; background: #fff; color: var(--quest-ink); }
+.account-danger__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
+.account-danger__actions > button:first-child { min-height: 42px; padding: 9px 12px; border: 1px solid #cdb7b2; border-radius: 9px; background: transparent; color: #603c35; font: inherit; font-size: .75rem; font-weight: 750; cursor: pointer; }
 @media (max-width: 480px) { .account-page { padding: 12px; }.account-card { padding: 24px 19px; } }

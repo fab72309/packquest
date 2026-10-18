@@ -45,7 +45,7 @@ export function ConnectedNewMissionPage() {
       setSelectedItemIds(nextTemplate?.items.map((item) => item.id) ?? [])
       setTitle((current) => current.trim() ? current : (nextTemplate?.name ?? ''))
       setPeriod((current) => current.trim() ? current : (nextTemplate?.period ?? ''))
-    } catch { setError('Les profils ou modèles ne peuvent pas être chargés. Réessayez.') }
+    } catch { setError('Les profils ou listes ne peuvent pas être chargés. Réessayez.') }
     finally { setLoading(false) }
   }, [])
 
@@ -107,7 +107,7 @@ export function ConnectedNewMissionPage() {
       </div>
 
       {loading ? (
-        <div className="connected-new-card" role="status">Chargement des profils et modèles…</div>
+        <div className="connected-new-card" role="status">Chargement des profils et listes…</div>
       ) : error && children.length === 0 && templates.length === 0 ? (
         <div className="connected-new-card" role="alert">
           <CircleAlert size={22} aria-hidden="true" />
@@ -122,9 +122,9 @@ export function ConnectedNewMissionPage() {
         </div>
       ) : templates.length === 0 ? (
         <div className="connected-new-card">
-          <h2>Préparez d’abord un modèle</h2>
+          <h2>Préparez d’abord une liste</h2>
           <p>Créez une liste réutilisable d’affaires à emporter, puis composez la mission de votre enfant.</p>
-          <Link className="button button--primary" to="/parent/templates">Gérer les modèles <ArrowRight size={17} aria-hidden="true" /></Link>
+          <Link className="button button--primary" to="/parent/templates">Gérer les listes <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       ) : (
         <form className="connected-new-card connected-new-form" onSubmit={(event) => void submit(event)}>
@@ -136,7 +136,7 @@ export function ConnectedNewMissionPage() {
               {children.map((child) => <option key={child.id} value={child.id}>{child.name}</option>)}
             </select>
           </label>
-          <label>Partir de quel modèle ?
+          <label>Partir de quelle liste ?
             <select value={templateId} onChange={(event) => chooseTemplate(event.target.value)} disabled={Boolean(draft) || busy}>
               {templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}
             </select>

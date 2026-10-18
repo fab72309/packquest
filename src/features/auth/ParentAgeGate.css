@@ -1,0 +1,19 @@
+.parent-age-page { display: grid; min-height: 100vh; place-items: center; padding: 16px; background: radial-gradient(circle at 90% 0, #dff1e6, transparent 34rem), #f7f5ed; color: var(--quest-ink); }
+.parent-age-card { display: grid; width: min(100%, 500px); gap: 15px; padding: clamp(23px, 4vw, 38px); border: 1px solid #d2dfd6; border-radius: 22px; background: #fffefa; box-shadow: 6px 8px 0 #e1e9df; }
+.parent-age-back { justify-self: start; color: #3a6c59; font-size: .78rem; font-weight: 750; }
+.parent-age-eyebrow { margin: 0; color: #44836d; font-size: .67rem; font-weight: 850; letter-spacing: .16em; }
+.parent-age-card h1 { margin: 0; font-size: clamp(1.7rem, 6vw, 2.4rem); line-height: 1.1; letter-spacing: -.055em; }
+.parent-age-card > p:not(.account-eyebrow):not(.parent-age-privacy), .parent-age-child-choice p { margin: 0; color: #587065; font-size: .86rem; line-height: 1.6; }
+.parent-age-card form { display: grid; gap: 12px; }
+.parent-age-card form label { color: #3a5a4a; font-size: .78rem; font-weight: 750; }
+.parent-age-card form input, .parent-age-card form select { width: 100%; min-width: 0; min-height: 48px; padding: 10px 8px; border: 1px solid #bfcec1; border-radius: 10px; background: white; color: var(--quest-ink); font: inherit; font-size: 1rem; }
+.parent-age-date { min-width: 0; margin: 0; padding: 0; border: 0; }
+.parent-age-date legend { margin-bottom: 10px; color: #3a5a4a; font-size: .78rem; font-weight: 750; }
+.parent-age-date-fields { display: grid; grid-template-columns: .7fr 1.4fr 1fr; gap: 8px; }
+.parent-age-date-fields label { display: grid; min-width: 0; gap: 6px; }
+.parent-age-date-fields input:focus-visible, .parent-age-date-fields select:focus-visible { outline: 3px solid #256b53; outline-offset: 2px; }
+.parent-age-card form .button, .parent-age-child-choice .button { width: 100%; justify-content: center; }
+.parent-age-child-choice { display: grid; gap: 13px; }
+.parent-age-child-choice > button { min-height: 42px; border: 0; background: transparent; color: #256b53; font: inherit; font-size: .78rem; font-weight: 750; cursor: pointer; }
+.parent-age-privacy { margin: 0; font-size: .75rem; }
+.parent-age-privacy a { color: #256b53; font-weight: 700; }

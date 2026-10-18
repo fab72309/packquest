@@ -30,9 +30,19 @@ export type ChildMission = {
 }
 
 export type ChildSnapshot = {
-  child: { id: string; name: string }
+  child: {
+    id: string
+    name: string
+    allow_help_requests: boolean
+    help_interactions_paused_at?: string | null
+    help_interactions_paused_by?: 'child' | 'parent' | null
+    child_help_policy_version?: string | null
+  }
   missions: ChildMission[]
 }
+
+export type HelpReportReason = 'personal_information' | 'unsafe_or_inappropriate' | 'hurtful_or_bullying' | 'other'
+export const CHILD_HELP_POLICY_VERSION = '2026-09-30'
 
 export type ChildActionInput =
   | { type: 'start_mission'; missionId: string }
@@ -116,6 +126,7 @@ function isSnapshot(value: unknown): value is ChildSnapshot {
     candidate.child
       && typeof candidate.child.id === 'string'
       && typeof candidate.child.name === 'string'
+      && typeof candidate.child.allow_help_requests === 'boolean'
       && Array.isArray(candidate.missions)
       && candidate.missions.every((mission) => mission
         && typeof mission.id === 'string'
@@ -272,6 +283,40 @@ export async function refreshChildSnapshot(): Promise<ChildSnapshot | null> {
     return { ...current, snapshot: response as ChildSnapshot }
   })
   return visibleSnapshot(saved)
+}
+
+export async function acceptChildHelpPolicy(): Promise<ChildSnapshot> {
+  const state = requireState(await readChildState())
+  await callChildFunction({
+    action: 'accept_help_policy',
+    device_token: state.deviceToken,
+    policy_version: CHILD_HELP_POLICY_VERSION,
+  })
+  const snapshot = await refreshChildSnapshot()
+  if (!snapshot) throw new ChildOfflineError('Les missions ne peuvent pas être actualisées.', 'server')
+  return snapshot
+}
+
+export async function reportHelpMessage(itemId: string, reason: HelpReportReason): Promise<{ reportId: string; snapshot: ChildSnapshot }> {
+  const state = requireState(await readChildState())
+  const result = await callChildFunction<{ report?: { id?: string } }>({
+    action: 'report_parent_help',
+    device_token: state.deviceToken,
+    item_id: itemId,
+    reason,
+  })
+  if (!result.report?.id) throw new ChildOfflineError('Le signalement n’a pas été confirmé.', 'server')
+  const snapshot = await refreshChildSnapshot()
+  if (!snapshot) throw new ChildOfflineError('Les missions ne peuvent pas être actualisées.', 'server')
+  return { reportId: result.report.id, snapshot }
+}
+
+export async function blockParentMessages(): Promise<ChildSnapshot> {
+  const state = requireState(await readChildState())
+  await callChildFunction({ action: 'block_parent', device_token: state.deviceToken })
+  const snapshot = await refreshChildSnapshot()
+  if (!snapshot) throw new ChildOfflineError('Les missions ne peuvent pas être actualisées.', 'server')
+  return snapshot
 }
 
 export async function enqueueChildAction(action: ChildActionInput): Promise<ChildSnapshot> {

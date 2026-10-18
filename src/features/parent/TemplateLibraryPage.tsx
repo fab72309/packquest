@@ -9,7 +9,9 @@ export type TemplateLibraryPageProps = {
   templates: EditableTemplate[]
   selectedTemplateId: string | null
   dirtyTemplateIds: ReadonlySet<string>
+  creating?: boolean
   onSelect: (templateId: string) => void
+  onCreateTemplate: () => void
   onUpdateTemplate: (templateId: string, updates: Partial<Pick<EditableTemplate, 'name' | 'description'>>) => void
   onUpdateItem: (templateId: string, itemId: string, updates: Partial<Pick<EditableTemplateItem, 'category' | 'label' | 'quantity' | 'required'>>) => void
   onAddItem: (templateId: string, item: EditableTemplateItem) => void
@@ -25,7 +27,9 @@ export function TemplateLibraryPage({
   templates,
   selectedTemplateId,
   dirtyTemplateIds,
+  creating = false,
   onSelect,
+  onCreateTemplate,
   onUpdateTemplate,
   onUpdateItem,
   onAddItem,
@@ -34,7 +38,7 @@ export function TemplateLibraryPage({
   saving,
   saveError,
   saveSuccess,
-  saveNote = 'Enregistrez vos changements avant de quitter cette page. Les modèles enregistrés resteront disponibles à votre prochaine connexion.',
+  saveNote = 'Enregistrez vos changements avant de quitter cette page. Les listes enregistrées resteront disponibles à votre prochaine connexion.',
 }: TemplateLibraryPageProps) {
   const idPrefix = useId()
   const selected = templates.find((template) => template.id === selectedTemplateId)
@@ -51,10 +55,10 @@ export function TemplateLibraryPage({
       && item.quantity >= 1
       && item.quantity <= 999)
   const validationMessage = !selected ? null
-    : !selected.name.trim() ? 'Donnez un nom au modèle.'
+    : !selected.name.trim() ? 'Donnez un nom à la liste.'
       : selected.name.trim().length > 100 ? 'Le nom doit contenir 100 caractères maximum.'
         : selected.description.length > 240 ? 'La description doit contenir 240 caractères maximum.'
-          : selected.items.length === 0 ? 'Ajoutez au moins une affaire pour utiliser ce modèle.'
+          : selected.items.length === 0 ? 'Ajoutez au moins une affaire pour utiliser cette liste.'
             : selected.items.some((item) => !item.label.trim()) ? 'Donnez un nom à chaque affaire.'
               : selected.items.some((item) => !item.category.trim()) ? 'Indiquez une catégorie pour chaque affaire.'
                 : selected.items.some((item) => item.label.trim().length > 100 || item.category.trim().length > 60) ? 'Un libellé ou une catégorie est trop long.'
@@ -81,21 +85,31 @@ export function TemplateLibraryPage({
   return (
     <div className="template-library">
       <header className="template-library__heading">
-        <p className="template-library__eyebrow">ESPACE PARENT · ORGANISATION</p>
-        <h1>Mes modèles</h1>
-        <p>Gérez les listes réutilisables pour vos prochaines missions.</p>
+        <div className="template-library__heading-row">
+          <div>
+            <p className="template-library__eyebrow">ESPACE PARENT · PRÉPARATION</p>
+            <h1>Mes listes</h1>
+            <p>Une liste contient les affaires réutilisables. Une mission en est une copie envoyée à votre enfant.</p>
+          </div>
+          <button className="template-library__create" type="button" onClick={onCreateTemplate} disabled={creating}>
+            <Plus size={17} aria-hidden="true" /> {creating ? 'Création…' : 'Nouvelle liste'}
+          </button>
+        </div>
       </header>
 
       {templates.length === 0 ? (
         <section className="template-library__empty" aria-live="polite">
           <span aria-hidden="true">✦</span>
-          <h2>Aucun modèle pour le moment</h2>
-          <p>Les modèles disponibles apparaîtront ici.</p>
+          <h2>Aucune liste pour le moment</h2>
+          <p>Créez une première liste d’affaires pour préparer une mission.</p>
+          <button className="template-library__create template-library__create--empty" type="button" onClick={onCreateTemplate} disabled={creating}>
+            <Plus size={17} aria-hidden="true" /> {creating ? 'Création…' : 'Créer ma première liste'}
+          </button>
         </section>
       ) : (
         <div className="template-library__layout">
-          <nav className="template-library__list" aria-label="Modèles de checklist">
-            <p className="template-library__section-label">VOTRE BIBLIOTHÈQUE</p>
+          <nav className="template-library__list" aria-label="Listes d’affaires">
+            <p className="template-library__section-label">VOS LISTES</p>
             {templates.map((template) => (
               <button
                 className={`template-library__choice${template.id === selectedTemplateId ? ' is-selected' : ''}`}
@@ -119,26 +133,26 @@ export function TemplateLibraryPage({
             <section className="template-library__editor" aria-labelledby="template-editor-title">
               <div className="template-library__editor-top">
                 <div>
-                  <p className="template-library__section-label">MODÈLE · {selected.period.toUpperCase()}</p>
-                  <h2 id="template-editor-title">Modifier le modèle</h2>
+                  <p className="template-library__section-label">LISTE · {selected.period.toUpperCase()}</p>
+                  <h2 id="template-editor-title">Préparer cette liste</h2>
                 </div>
                 <span className="template-library__badge">{dirtyTemplateIds.has(selected.id) ? 'Modifié' : `${selected.items.length} affaires`}</span>
               </div>
 
               <div className="template-library__fields">
                 <label className="template-library__field">
-                  <span>Nom du modèle</span>
+                  <span>Nom de la liste</span>
                   <input value={selected.name} maxLength={100} disabled={saving} onChange={(event) => onUpdateTemplate(selected.id, { name: event.target.value })} placeholder="Ex. Sac du week-end" />
                 </label>
                 <label className="template-library__field">
                   <span>Description</span>
-                  <textarea value={selected.description} maxLength={240} disabled={saving} onChange={(event) => onUpdateTemplate(selected.id, { description: event.target.value })} placeholder="À quoi sert ce modèle ?" rows={2} />
+                  <textarea value={selected.description} maxLength={240} disabled={saving} onChange={(event) => onUpdateTemplate(selected.id, { description: event.target.value })} placeholder="À quoi sert cette liste ?" rows={2} />
                 </label>
               </div>
 
               <div className="template-library__items-heading">
                 <div><h3>Affaires à préparer</h3><p>Ajoutez les essentiels et indiquez ce qui est indispensable.</p></div>
-                <button className="template-library__add" type="button" onClick={addItem} disabled={saving}><Plus size={17} aria-hidden="true" /> Ajouter</button>
+                <button className="template-library__add" type="button" onClick={addItem} disabled={saving}><Plus size={17} aria-hidden="true" /> Ajouter une affaire</button>
               </div>
 
               <div className="template-library__items">
@@ -177,7 +191,7 @@ export function TemplateLibraryPage({
               <footer className="template-library__footer">
                 <p className="template-library__save-note">{saveNote}</p>
                 <button className="template-library__save" type="button" onClick={() => onSave(selected.id)} disabled={saving || !contentIsValid}>
-                  <Save size={17} aria-hidden="true" /> {saving ? 'Enregistrement…' : 'Enregistrer le modèle'}
+                  <Save size={17} aria-hidden="true" /> {saving ? 'Enregistrement…' : 'Enregistrer la liste'}
                 </button>
               </footer>
               {validationMessage && <p className="template-library__validation" role="status">{validationMessage}</p>}

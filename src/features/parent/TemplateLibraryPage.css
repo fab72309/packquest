@@ -6,9 +6,15 @@
 }
 
 .template-library__heading { margin: 0 0 25px; }
+.template-library__heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
 .template-library__eyebrow, .template-library__section-label { margin: 0; color: #809084; font-size: .64rem; font-weight: 850; letter-spacing: .14em; }
 .template-library__heading h1 { margin: 8px 0 6px; font-size: clamp(1.9rem, 4vw, 2.55rem); letter-spacing: -.06em; line-height: 1.08; }
-.template-library__heading > p:last-child { margin: 0; color: #758279; font-size: .87rem; line-height: 1.55; }
+.template-library__heading-row > div > p:last-child { max-width: 560px; margin: 0; color: #758279; font-size: .87rem; line-height: 1.55; }
+.template-library__create { display: inline-flex; min-height: 46px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 7px; padding: 0 15px; border: 1px solid transparent; border-radius: 12px; background: var(--forest); color: #fff; font-size: .74rem; font-weight: 780; cursor: pointer; box-shadow: 0 7px 16px rgb(51 91 64 / 14%); }
+.template-library__create:hover:not(:disabled) { background: var(--forest-dark); }
+.template-library__create:disabled { cursor: wait; opacity: .72; }
+.template-library__create--empty { margin-top: 17px; background: #f2f8f1; border-color: #d1e3d4; color: var(--forest); box-shadow: none; }
+.template-library__create--empty:hover:not(:disabled) { background: #e7f2e7; }
 .template-library__layout { display: grid; grid-template-columns: minmax(230px, .72fr) minmax(0, 1.7fr); gap: 20px; align-items: start; }
 .template-library__list, .template-library__editor, .template-library__empty { border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: 0 9px 28px rgb(28 43 34 / 4%); }
 .template-library__list { padding: 19px 13px; }
@@ -72,7 +78,9 @@
 @media (max-width: 520px) {
   .template-library { padding-top: 0; }
   .template-library__heading { margin-bottom: 18px; }
-  .template-library__heading > p:last-child { max-width: 310px; font-size: .79rem; }
+  .template-library__heading-row { display: block; }
+  .template-library__heading-row > div > p:last-child { max-width: 310px; font-size: .79rem; }
+  .template-library__heading-row > .template-library__create { width: 100%; margin-top: 15px; }
   .template-library__fields { grid-template-columns: 1fr; gap: 12px; padding: 15px 0 21px; }
   .template-library__items-heading { align-items: flex-end; }
   .template-library__items-heading p { max-width: 235px; }

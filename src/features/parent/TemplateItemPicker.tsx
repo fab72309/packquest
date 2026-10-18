@@ -44,7 +44,7 @@ export function TemplateItemPicker({
       <div className="mission-item-picker__heading">
         <div>
           <h2 id={`${idPrefix}-heading`}>{heading}</h2>
-          <p>Choisissez ce que votre enfant devra mettre dans sa valise. Cette sélection ne modifie pas le modèle.</p>
+          <p>Choisissez ce que votre enfant devra mettre dans sa valise. Cette sélection ne modifie pas la liste.</p>
         </div>
         <span className="mission-item-picker__count" aria-live="polite">
           {selectedCount} affaire{selectedCount > 1 ? 's' : ''} sélectionnée{selectedCount > 1 ? 's' : ''} sur {items.length}
@@ -97,7 +97,7 @@ export function TemplateItemPicker({
           {selectedCount === 0 && <p className="mission-item-picker__selection-help" role="status">Choisissez au moins une affaire pour envoyer la mission.</p>}
         </>
       ) : (
-        <p className="mission-item-picker__empty">Ce modèle ne contient aucune affaire. Ajoutez-en dans la bibliothèque des modèles pour créer la mission.</p>
+        <p className="mission-item-picker__empty">Cette liste ne contient aucune affaire. Ajoutez-en dans vos listes pour créer la mission.</p>
       )}
     </section>
   )

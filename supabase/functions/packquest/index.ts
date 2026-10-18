@@ -2,7 +2,12 @@ import { createClient } from 'npm:@supabase/supabase-js@2.117.2'
 
 type Payload = Record<string, unknown>
 
-const localOrigins = ['http://127.0.0.1:5173', 'http://localhost:5173']
+const localOrigins = [
+  'http://127.0.0.1:5173',
+  'http://localhost:5173',
+  'http://localhost',
+  'https://localhost',
+]
 const allowedOrigins = new Set([
   ...localOrigins,
   ...(Deno.env.get('PACKQUEST_ALLOWED_ORIGINS') ?? '')
@@ -11,6 +16,13 @@ const allowedOrigins = new Set([
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')
 const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+const helpPolicyVersion = '2026-09-30'
+const helpReportReasons = new Set([
+  'personal_information',
+  'unsafe_or_inappropriate',
+  'hurtful_or_bullying',
+  'other',
+])
 
 function json(body: unknown, status: number, origin: string | null): Response {
   return new Response(JSON.stringify(body), {
@@ -54,6 +66,12 @@ function uuidArray(value: unknown): string[] | null {
 function capability(body: Payload, key: string): string | null {
   const value = field(body, key, 43)
   return value && /^[A-Za-z0-9_-]{43}$/.test(value) ? value : null
+}
+
+function containsContactDetails(message: string): boolean {
+  return /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(message)
+    || /(https?:\/\/|www\.)/i.test(message)
+    || message.replace(/\D/g, '').length >= 8
 }
 
 function newCapability(): string {
@@ -137,7 +155,7 @@ Deno.serve(async (request) => {
       return json({ ...data, device_token: deviceToken }, 200, origin)
     }
 
-    if (['get_missions', 'start_mission', 'update_item', 'request_help', 'complete_mission'].includes(action)) {
+    if (['get_missions', 'start_mission', 'update_item', 'request_help', 'complete_mission', 'report_parent_help', 'accept_help_policy', 'block_parent'].includes(action)) {
       const deviceToken = capability(body, 'device_token')
       if (!deviceToken) return fail('Cet appareil doit rejoindre la famille.', 401, origin)
       const deviceHash = await hash(deviceToken)
@@ -148,6 +166,40 @@ Deno.serve(async (request) => {
         })
         if (error) return databaseError(error.code, origin)
         return json(data, 200, origin)
+      }
+
+      if (action === 'accept_help_policy') {
+        const policyVersion = field(body, 'policy_version', 32)
+        if (policyVersion !== helpPolicyVersion) return fail('Les règles de sécurité ont changé. Relisez-les.', 400, origin)
+        const { data, error } = await service.rpc('packquest_child_acknowledge_help_policy', {
+          p_device_hash: deviceHash,
+          p_policy_version: policyVersion,
+        })
+        if (error) return databaseError(error.code, origin)
+        return json({ accepted: data }, 200, origin)
+      }
+
+      if (action === 'block_parent') {
+        const { data, error } = await service.rpc('packquest_child_block_parent', {
+          p_device_hash: deviceHash,
+        })
+        if (error) return databaseError(error.code, origin)
+        return json({ blocked: data }, 200, origin)
+      }
+
+      if (action === 'report_parent_help') {
+        const itemId = uuid(body, 'item_id')
+        const reason = field(body, 'reason', 40)
+        if (!itemId || !reason || !helpReportReasons.has(reason)) {
+          return fail('Le signalement est incomplet.', 400, origin)
+        }
+        const { data, error } = await service.rpc('packquest_child_report_help', {
+          p_device_hash: deviceHash,
+          p_item_id: itemId,
+          p_reason: reason,
+        })
+        if (error) return databaseError(error.code, origin)
+        return json({ report: data }, 200, origin)
       }
 
       const mutationId = uuid(body, 'mutation_id')
@@ -174,6 +226,9 @@ Deno.serve(async (request) => {
       }
       const message = action === 'request_help' ? field(body, 'message')?.trim() : null
       if (action === 'request_help' && !message) return fail('Message d’aide manquant.', 400, origin)
+      if (action === 'request_help' && message && containsContactDetails(message)) {
+        return fail('N’envoie pas d’adresse e-mail, de numéro de téléphone ou de lien. Garde le message lié à cette affaire.', 400, origin)
+      }
 
       const { data, error } = await service.rpc('packquest_child_mutation', {
         p_device_hash: deviceHash,
@@ -197,9 +252,20 @@ Deno.serve(async (request) => {
     if (authError || !auth.user) return fail('Connexion parent expirée.', 401, origin)
     const ownerId = auth.user.id
 
+    if (action === 'delete_parent_account') {
+      const { error } = await service.auth.admin.deleteUser(ownerId)
+      if (error) return fail('La suppression du compte est indisponible. Réessayez.', 500, origin)
+      return json({ deleted: true }, 200, origin)
+    }
+
     if (action === 'create_child') {
       const name = field(body, 'name', 60)?.trim()
+      const parentalConsent = body.parental_consent === true
+      const policyVersion = field(body, 'policy_version', 32)
       if (!name) return fail('Prénom ou pseudonyme requis.', 400, origin)
+      if (!parentalConsent || policyVersion !== '2026-09-29') {
+        return fail('La confirmation du parent ou représentant légal est requise.', 400, origin)
+      }
       const { error: familyInsertError } = await service.from('families')
         .upsert({ owner_user_id: ownerId }, {
           onConflict: 'owner_user_id', ignoreDuplicates: true,
@@ -209,9 +275,50 @@ Deno.serve(async (request) => {
         .select('id').eq('owner_user_id', ownerId).single()
       if (familyError || !family) return databaseError(familyError?.code, origin)
       const { data, error } = await service.from('child_profiles')
-        .insert({ family_id: family.id, name }).select('id,family_id,name,avatar_key,created_at,updated_at').single()
+        .insert({
+          family_id: family.id,
+          name,
+          parental_consent_at: new Date().toISOString(),
+          parental_consent_version: policyVersion,
+        }).select('id,family_id,name,avatar_key,allow_help_requests,created_at,updated_at').single()
       if (error) return databaseError(error.code, origin)
       return json({ child: data }, 200, origin)
+    }
+
+    if (action === 'set_child_help_permission') {
+      const childId = uuid(body, 'child_id')
+      const enabled = body.enabled
+      if (!childId || typeof enabled !== 'boolean') {
+        return fail('Profil ou autorisation invalide.', 400, origin)
+      }
+      const policyVersion = enabled ? field(body, 'policy_version', 32) : null
+      if (enabled && policyVersion !== helpPolicyVersion) {
+        return fail('Acceptez les règles de sécurité avant d’activer les messages.', 400, origin)
+      }
+      const { data, error } = await service.rpc('packquest_set_child_help_permission', {
+        p_owner_id: ownerId,
+        p_child_id: childId,
+        p_enabled: enabled,
+        p_policy_version: policyVersion,
+      })
+      if (error) return databaseError(error.code, origin)
+      if (!data) return fail('Accès refusé.', 403, origin)
+      return json({ child: data }, 200, origin)
+    }
+
+    if (action === 'report_child_help') {
+      const itemId = uuid(body, 'item_id')
+      const reason = field(body, 'reason', 40)
+      if (!itemId || !reason || !helpReportReasons.has(reason)) {
+        return fail('Le signalement est incomplet.', 400, origin)
+      }
+      const { data, error } = await service.rpc('packquest_parent_report_help', {
+        p_owner_id: ownerId,
+        p_item_id: itemId,
+        p_reason: reason,
+      })
+      if (error) return databaseError(error.code, origin)
+      return json({ report: data }, 200, origin)
     }
 
     if (action === 'create_pairing') {
@@ -256,6 +363,9 @@ Deno.serve(async (request) => {
           (action !== 'revoke_device' && !missionId) ||
           (action === 'reply_help' && (!itemId || !response))) {
         return fail('Données de mission invalides.', 400, origin)
+      }
+      if (action === 'reply_help' && response && containsContactDetails(response)) {
+        return fail('N’incluez pas d’adresse e-mail, de numéro de téléphone ou de lien dans un indice.', 400, origin)
       }
       const { data, error } = await service.rpc('packquest_parent_mutation', {
         p_owner_id: ownerId, p_action: action, p_mission_id: missionId,

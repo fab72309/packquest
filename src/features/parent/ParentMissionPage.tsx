@@ -51,7 +51,7 @@ export function ParentMissionPage() {
         <div>
           <p className="eyebrow"><span className="eyebrow-dot" /> QUÊTE DE NOA · APERÇU LOCAL</p>
           <h1>{mission.title}<span className="heading-period">.</span></h1>
-          <p className="page-subtitle">Noa <span className="meta-divider" /> {mission.period} <span className="meta-divider" /> Modèle : {mission.templateName}</p>
+          <p className="page-subtitle">Noa <span className="meta-divider" /> {mission.period} <span className="meta-divider" /> Liste : {mission.templateName}</p>
         </div>
         <Link className="button button--secondary" to="/demo/child">Passer à l’aperçu enfant <ArrowRight size={17} aria-hidden="true" /></Link>
       </div>
@@ -98,7 +98,7 @@ export function ParentMissionPage() {
       </div>
 
       <section className="all-items-section">
-        <div className="section-heading"><div><p className="eyebrow">CHECKLIST</p><h2>Tout le contenu de la mission</h2></div><div className="section-heading__actions"><Link className="text-link" to="/demo/templates">Gérer mes modèles <ArrowRight size={16} aria-hidden="true" /></Link><Link className="text-link" to="/demo/child/mission">Ouvrir la checklist <ArrowRight size={16} aria-hidden="true" /></Link></div></div>
+        <div className="section-heading"><div><p className="eyebrow">CHECKLIST</p><h2>Tout le contenu de la mission</h2></div><div className="section-heading__actions"><Link className="text-link" to="/demo/templates">Gérer mes listes <ArrowRight size={16} aria-hidden="true" /></Link><Link className="text-link" to="/demo/child/mission">Ouvrir la checklist <ArrowRight size={16} aria-hidden="true" /></Link></div></div>
         <div className="parent-items-list">
           {mission.items.map((item) => (
             <div className="parent-item-row" key={item.id}>

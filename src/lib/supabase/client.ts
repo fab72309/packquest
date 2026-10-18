@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { Capacitor } from '@capacitor/core'
 import type { Database } from './database.types'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim()
@@ -10,7 +11,9 @@ export const supabase = isSupabaseConfigured
   ? createClient<Database>(supabaseUrl as string, supabasePublishableKey as string, {
       auth: {
         autoRefreshToken: true,
-        detectSessionInUrl: true,
+        // Native callbacks arrive through the App plugin and are exchanged in App.tsx.
+        detectSessionInUrl: !Capacitor.isNativePlatform(),
+        flowType: 'pkce',
         persistSession: true,
       },
     })

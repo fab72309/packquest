@@ -16,27 +16,54 @@ export type Database = {
     Tables: {
       child_profiles: {
         Row: {
+          allow_help_requests: boolean
           avatar_key: string | null
+          child_help_policy_accepted_at: string | null
+          child_help_policy_version: string | null
           created_at: string
           family_id: string
+          help_interactions_paused_at: string | null
+          help_interactions_paused_by: 'child' | 'parent' | null
+          help_policy_accepted_at: string | null
+          help_policy_version: string | null
           id: string
           name: string
+          parental_consent_at: string | null
+          parental_consent_version: string | null
           updated_at: string
         }
         Insert: {
+          allow_help_requests?: boolean
           avatar_key?: string | null
+          child_help_policy_accepted_at?: string | null
+          child_help_policy_version?: string | null
           created_at?: string
           family_id: string
+          help_interactions_paused_at?: string | null
+          help_interactions_paused_by?: 'child' | 'parent' | null
+          help_policy_accepted_at?: string | null
+          help_policy_version?: string | null
           id?: string
           name: string
+          parental_consent_at?: string | null
+          parental_consent_version?: string | null
           updated_at?: string
         }
         Update: {
+          allow_help_requests?: boolean
           avatar_key?: string | null
+          child_help_policy_accepted_at?: string | null
+          child_help_policy_version?: string | null
           created_at?: string
           family_id?: string
+          help_interactions_paused_at?: string | null
+          help_interactions_paused_by?: 'child' | 'parent' | null
+          help_policy_accepted_at?: string | null
+          help_policy_version?: string | null
           id?: string
           name?: string
+          parental_consent_at?: string | null
+          parental_consent_version?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -95,6 +122,60 @@ export type Database = {
           mutation_id?: string
           request?: Json
           response?: Json
+        }
+        Relationships: []
+      }
+      content_safety_reports: {
+        Row: {
+          child_profile_id: string
+          created_at: string
+          family_id: string
+          id: string
+          mission_id: string
+          mission_item_id: string
+          reason: 'personal_information' | 'unsafe_or_inappropriate' | 'hurtful_or_bullying' | 'other'
+          reported_content: string
+          reported_role: 'parent' | 'child'
+          reporter_device_id: string | null
+          reporter_role: 'parent' | 'child'
+          reporter_user_id: string | null
+          review_action: string | null
+          reviewed_at: string | null
+          status: 'open' | 'reviewed' | 'actioned' | 'closed'
+        }
+        Insert: {
+          child_profile_id: string
+          created_at?: string
+          family_id: string
+          id?: string
+          mission_id: string
+          mission_item_id: string
+          reason: 'personal_information' | 'unsafe_or_inappropriate' | 'hurtful_or_bullying' | 'other'
+          reported_content: string
+          reported_role: 'parent' | 'child'
+          reporter_device_id?: string | null
+          reporter_role: 'parent' | 'child'
+          reporter_user_id?: string | null
+          review_action?: string | null
+          reviewed_at?: string | null
+          status?: 'open' | 'reviewed' | 'actioned' | 'closed'
+        }
+        Update: {
+          child_profile_id?: string
+          created_at?: string
+          family_id?: string
+          id?: string
+          mission_id?: string
+          mission_item_id?: string
+          reason?: 'personal_information' | 'unsafe_or_inappropriate' | 'hurtful_or_bullying' | 'other'
+          reported_content?: string
+          reported_role?: 'parent' | 'child'
+          reporter_device_id?: string | null
+          reporter_role?: 'parent' | 'child'
+          reporter_user_id?: string | null
+          review_action?: string | null
+          reviewed_at?: string | null
+          status?: 'open' | 'reviewed' | 'actioned' | 'closed'
         }
         Relationships: []
       }
@@ -441,6 +522,18 @@ export type Database = {
         }
         Returns: Json
       }
+      packquest_child_acknowledge_help_policy: {
+        Args: { p_device_hash: string; p_policy_version: string }
+        Returns: Json
+      }
+      packquest_child_report_help: {
+        Args: { p_device_hash: string; p_item_id: string; p_reason: string }
+        Returns: Json
+      }
+      packquest_child_block_parent: {
+        Args: { p_device_hash: string }
+        Returns: Json
+      }
       packquest_child_snapshot: {
         Args: { p_device_hash: string }
         Returns: Json
@@ -469,6 +562,14 @@ export type Database = {
           p_owner_id: string
           p_response?: string | null
         }
+        Returns: Json
+      }
+      packquest_parent_report_help: {
+        Args: { p_item_id: string; p_owner_id: string; p_reason: string }
+        Returns: Json
+      }
+      packquest_set_child_help_permission: {
+        Args: { p_child_id: string; p_enabled: boolean; p_owner_id: string; p_policy_version?: string | null }
         Returns: Json
       }
       packquest_redeem_pairing: {

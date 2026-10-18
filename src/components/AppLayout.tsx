@@ -26,16 +26,16 @@ function BrandMark() {
 const parentLinks = [
   { to: '/parent', label: 'Accueil', Icon: House, end: true },
   { to: '/parent/mission', label: 'Mission', Icon: ClipboardList },
-  { to: '/demo/templates', label: 'Modèles', Icon: ListChecks },
-  { to: '/parent/new', label: 'Nouvelle mission', Icon: Sparkles },
+  { to: '/demo/templates', label: 'Listes', Icon: ListChecks },
+  { to: '/parent/new', label: 'Préparer', Icon: Sparkles },
 ]
 
 const connectedLinks = [
   { to: '/parent/account', label: 'Mon compte', Icon: House },
   { to: '/parent/pairing', label: 'Appairage enfant', Icon: QrCode },
   { to: '/parent/history', label: 'Missions', Icon: History },
-  { to: '/parent/create', label: 'Nouvelle mission', Icon: Sparkles },
-  { to: '/parent/templates', label: 'Modèles', Icon: ListChecks },
+  { to: '/parent/create', label: 'Préparer', Icon: Sparkles },
+  { to: '/parent/templates', label: 'Listes', Icon: ListChecks },
 ]
 
 export function AppLayout() {
@@ -62,7 +62,7 @@ export function AppLayout() {
         </NavLink>
 
         <div className="topbar-context">
-          <span className="demo-indicator"><span /> {isConnectedRoute ? 'Espace parent' : isTemplateLibrary ? 'Modèles de test' : 'Aperçu de démonstration'}</span>
+          <span className="demo-indicator"><span /> {isConnectedRoute ? 'Espace parent' : isTemplateLibrary ? 'Listes de test' : 'Aperçu de démonstration'}</span>
         </div>
 
         <div className="topbar-actions">
@@ -84,8 +84,8 @@ export function AppLayout() {
       {isConnectedRoute ? null : isTemplateLibrary ? (
         <div className="demo-banner" role="note">
           <span>{isDemoTemplateLibrary
-            ? 'Mode test sans compte. Les modèles restent dans ce navigateur et ne sont pas synchronisés avec Supabase.'
-            : 'Les modèles enregistrés sont rattachés au compte. Les missions et l’aperçu enfant restent en mode démo.'}</span>
+            ? 'Mode test sans compte. Les listes restent dans ce navigateur et ne sont pas synchronisées avec Supabase.'
+            : 'Les listes enregistrées sont rattachées au compte. Les missions et l’aperçu enfant restent en mode démo.'}</span>
         </div>
       ) : (
         <div className="demo-banner" role="note">

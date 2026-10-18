@@ -41,7 +41,10 @@ export function WelcomePage() {
         {previewBuild ? <>
           <p className="welcome-preview-note"><ShieldCheck size={18} aria-hidden="true" /> Cette version n’ouvre pas de compte et n’envoie aucune donnée à PackQuest. Les exemples restent dans l’onglet et disparaissent au rechargement.</p>
           <Link className="welcome-privacy-link" to="/privacy">Confidentialité de cette version de test</Link>
-        </> : <p className="welcome-privacy"><ShieldCheck size={18} aria-hidden="true" /> Vos données personnelles servent au fonctionnement de PackQuest. Nous ne les exploitons pas à des fins commerciales : ni vente, ni publicité ciblée.</p>}
+        </> : <>
+          <p className="welcome-privacy"><ShieldCheck size={18} aria-hidden="true" /> PackQuest ne vend pas les données familiales et ne les utilise pas pour de la publicité ciblée.</p>
+          <div className="welcome-legal-links"><Link to="/privacy">Confidentialité</Link><Link to="/account-deletion">Suppression de compte</Link></div>
+        </>}
       </div>
     </main>
   )

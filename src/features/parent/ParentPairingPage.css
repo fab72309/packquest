@@ -9,6 +9,16 @@
 .pairing-create { display: flex; align-items: end; gap: 9px; margin-top: 18px; }
 .pairing-create .pairing-label { flex: 1; }
 .pairing-create .button { flex: 0 0 auto; }
+.pairing-consent { display: flex; flex: 1 0 100%; align-items: flex-start; gap: 9px; color: #4f665a; font-size: .72rem; line-height: 1.5; }
+.pairing-consent input, .pairing-help-setting input { width: 19px; height: 19px; flex: 0 0 auto; accent-color: #28745a; }
+.pairing-consent a { color: #256b53; font-weight: 750; }
+.pairing-help-setting { margin-top: 17px; padding: 13px; border: 1px solid #d5e1d5; border-radius: 10px; background: #f7fbf7; }
+.pairing-help-setting label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.pairing-help-setting strong, .pairing-help-setting small { display: block; }
+.pairing-help-setting strong { color: #315a49; font-size: .78rem; }
+.pairing-help-setting small { margin-top: 4px; color: #587166; font-size: .7rem; line-height: 1.5; }
+.pairing-help-setting small a { color: #256b53; font-weight: 750; text-decoration: underline; text-underline-offset: 2px; }
+.pairing-help-paused { margin: 11px 0 0; padding: 9px 10px; border-radius: 8px; background: #fff3d6; color: #684f1d; font-size: .72rem; line-height: 1.45; }
 .pairing-qr { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; padding: 18px; border: 1px solid #d3e0d1; border-radius: 12px; background: white; text-align: center; }
 .pairing-qr svg { display: block; width: min(100%, 214px); height: auto; }
 .pairing-qr p { width: 100%; margin: 0; color: #476757; font-size: .78rem; }

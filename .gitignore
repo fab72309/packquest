@@ -18,6 +18,11 @@ supabase/.branches/
 supabase/.temp/
 .agents/skills/
 
+# Android signing credentials must remain outside version control.
+*.jks
+*.keystore
+signing.properties
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

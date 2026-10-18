@@ -32,7 +32,7 @@ export function NewDemoMissionPage() {
       <div className="page-heading page-heading--compact">
         <p className="eyebrow"><span className="eyebrow-dot" /> NOUVELLE MISSION · DÉMO</p>
         <h1>On prépare la suite<span className="heading-period">.</span></h1>
-        <p className="page-subtitle">Nommez la mission, choisissez une liste et gardez seulement les affaires à emporter.</p>
+      <p className="page-subtitle">Donnez un nom à la mission, choisissez une liste et gardez seulement les affaires à emporter.</p>
       </div>
 
       <form className="mission-form" onSubmit={handleSubmit}>
@@ -59,7 +59,7 @@ export function NewDemoMissionPage() {
         </div>
 
         <fieldset className="template-choice">
-          <legend><span className="form-step">02</span> Choisir un modèle de départ</legend>
+          <legend><span className="form-step">02</span> Choisir une liste de départ</legend>
           <div className="template-grid">
             {templates.map((template) => {
               const selected = template.id === selectedId
@@ -75,7 +75,7 @@ export function NewDemoMissionPage() {
                   <span className="template-card__icon"><ClipboardList size={20} aria-hidden="true" /></span>
                   <span className="template-card__copy"><strong>{template.name}</strong><small>{template.description}</small></span>
                   <span className="template-card__check">{selected && <Check size={14} aria-hidden="true" />}</span>
-                  <span className="template-card__meta">{template.items.length === 0 ? 'Ajoutez une affaire à ce modèle pour l’utiliser' : <>{template.items.length} affaires <span>·</span> {new Set(template.items.map((item) => item.category)).size} catégories</>}</span>
+                  <span className="template-card__meta">{template.items.length === 0 ? 'Ajoutez une affaire à cette liste pour l’utiliser' : <>{template.items.length} affaires <span>·</span> {new Set(template.items.map((item) => item.category)).size} catégories</>}</span>
                 </button>
               )
             })}
@@ -96,7 +96,7 @@ export function NewDemoMissionPage() {
 
         <div className="prototype-note">
           <Sparkles size={17} aria-hidden="true" />
-          <p><strong>Mode de test :</strong> {import.meta.env.DEV ? 'la mission reprend une copie du modèle enregistré sur cet appareil' : 'la mission utilise un modèle d’exemple, distinct de ceux de votre compte'}. Elle reste en mémoire jusqu’au rechargement.</p>
+          <p><strong>Mode de test :</strong> {import.meta.env.DEV ? 'la mission reprend une copie de la liste enregistrée sur cet appareil' : 'la mission utilise une liste d’exemple, distincte de celles de votre compte'}. Elle reste en mémoire jusqu’au rechargement.</p>
         </div>
 
         <div className="form-actions">

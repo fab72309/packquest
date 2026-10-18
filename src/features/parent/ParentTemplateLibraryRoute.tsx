@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { Browser } from '@capacitor/browser'
+import { Capacitor } from '@capacitor/core'
 import type { Session, SupabaseClient } from '@supabase/supabase-js'
 import { ArrowRight, LogOut } from 'lucide-react'
 import { Link, useBeforeUnload, useBlocker } from 'react-router'
 import type { TemplateDefinition, TemplateItem } from '../../domain/template'
-import { getAppUrl } from '../../lib/appUrl'
+import { getAuthRedirectUrl } from '../../lib/appUrl'
 import type { Database } from '../../lib/supabase/database.types'
 import { isSupabaseConfigured, supabase } from '../../lib/supabase/client'
 import { loadLocalDemoTemplateDefinitions, saveLocalDemoTemplateDefinitions } from '../../services/demoTemplateStorage'
-import { loadTemplateLibrary, saveTemplate } from '../../services/templateLibraryService'
+import { createTemplate, loadTemplateLibrary, saveTemplate } from '../../services/templateLibraryService'
 import { TemplateLibraryPage } from './TemplateLibraryPage'
 import './ParentTemplateLibraryRoute.css'
 
@@ -29,7 +31,7 @@ function UnsavedTemplateDialog({ blocker }: { blocker: ReturnType<typeof useBloc
     <div className="template-unsaved-overlay">
       <div className="template-unsaved-dialog" role="alertdialog" aria-modal="true" aria-labelledby="template-unsaved-title" aria-describedby="template-unsaved-description" onKeyDown={(event) => { if (event.key === 'Escape') blocker.reset() }}>
         <h2 id="template-unsaved-title">Quitter sans enregistrer ?</h2>
-        <p id="template-unsaved-description">Vos modifications de modèles seront perdues.</p>
+        <p id="template-unsaved-description">Vos modifications de listes seront perdues.</p>
         <div className="template-unsaved-actions">
           <button type="button" autoFocus onClick={() => blocker.reset()}>Rester et enregistrer</button>
           <button type="button" onClick={() => blocker.proceed()}>Quitter sans enregistrer</button>
@@ -55,6 +57,24 @@ function LocalDemoTemplateLibrary() {
 
   function markDirty(templateId: string) {
     setDirtyTemplateIds((current) => new Set(current).add(templateId))
+  }
+
+  function createLocalTemplate() {
+    const id = globalThis.crypto?.randomUUID?.()
+      ?? `local-${Date.now()}-${Math.random().toString(16).slice(2)}`
+    const template: TemplateDefinition = {
+      id,
+      name: 'Nouvelle liste',
+      description: '',
+      period: 'Semaine prochaine',
+      version: 1,
+      items: [],
+    }
+    setTemplates((current) => [...current, template])
+    setSelectedTemplateId(template.id)
+    markDirty(template.id)
+    setSaveError(null)
+    setSaveSuccess(null)
   }
 
   function updateTemplate(templateId: string, updates: Partial<Pick<TemplateDefinition, 'name' | 'description'>>) {
@@ -99,16 +119,17 @@ function LocalDemoTemplateLibrary() {
     if (!templateToSave) return
 
     try {
-      const savedTemplates = loadLocalDemoTemplateDefinitions().map((template) =>
-        template.id === templateId ? templateToSave : template,
-      )
+      const savedTemplates = loadLocalDemoTemplateDefinitions()
+      const existingIndex = savedTemplates.findIndex((template) => template.id === templateId)
+      if (existingIndex >= 0) savedTemplates[existingIndex] = templateToSave
+      else savedTemplates.push(templateToSave)
       saveLocalDemoTemplateDefinitions(savedTemplates)
       setDirtyTemplateIds((current) => { const next = new Set(current); next.delete(templateId); return next })
       setSaveError(null)
-      setSaveSuccess('Modèle enregistré sur cet appareil.')
+      setSaveSuccess('Liste enregistrée sur cet appareil.')
     } catch {
       setSaveSuccess(null)
-      setSaveError('Le modèle n’a pas pu être enregistré dans ce navigateur.')
+      setSaveError('La liste n’a pas pu être enregistrée dans ce navigateur.')
     }
   }
 
@@ -119,6 +140,7 @@ function LocalDemoTemplateLibrary() {
         templates={templates}
         selectedTemplateId={selectedTemplateId}
         dirtyTemplateIds={dirtyTemplateIds}
+        onCreateTemplate={createLocalTemplate}
         onSelect={(id) => { setSelectedTemplateId(id); setSaveError(null); setSaveSuccess(null) }}
         onUpdateTemplate={updateTemplate}
         onUpdateItem={updateItem}
@@ -128,7 +150,7 @@ function LocalDemoTemplateLibrary() {
         saving={false}
         saveError={saveError}
         saveSuccess={saveSuccess}
-        saveNote="Enregistrez vos changements avant de quitter cette page. Les modèles enregistrés restent sur cet appareil et servent aux missions de test."
+        saveNote="Enregistrez vos changements avant de quitter cette page. Les listes enregistrées restent sur cet appareil et servent aux missions de test."
       />
     </div>
   )
@@ -138,8 +160,8 @@ function SupabaseSetupRequired() {
   return (
     <section className="template-account-state" aria-labelledby="template-account-title">
       <p className="template-account-state__eyebrow">COMPTE PARENT</p>
-      <h1 id="template-account-title">Bibliothèque indisponible</h1>
-      <p>Les modèles du compte ne sont pas accessibles pour le moment.</p>
+      <h1 id="template-account-title">Listes indisponibles</h1>
+      <p>Les listes du compte ne sont pas accessibles pour le moment.</p>
       <Link className="button button--secondary" to="/parent/account">Revenir à mon compte <ArrowRight size={16} aria-hidden="true" /></Link>
     </section>
   )
@@ -219,7 +241,7 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
           : loadedTemplates[0]?.id ?? null)
       })
       .catch(() => {
-        if (active) setLoadError('Impossible de charger vos modèles pour le moment. Réessayez dans quelques instants.')
+        if (active) setLoadError('Impossible de charger vos listes pour le moment. Réessayez dans quelques instants.')
       })
       .finally(() => {
         if (active) setLoadingTemplates(false)
@@ -238,7 +260,7 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
         const { data, error } = await client.auth.signUp({
           email: email.trim(),
           password,
-          options: { emailRedirectTo: getAppUrl('/parent/templates') },
+          options: { emailRedirectTo: getAuthRedirectUrl('/parent/templates') },
         })
         if (error) throw error
         if (!data.session) setAuthNotice('Un lien de confirmation a été envoyé à cette adresse.')
@@ -257,7 +279,7 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
   }
 
   async function signOut() {
-    if (dirtyTemplateIds.size > 0 && !window.confirm('Des modifications de modèle ne sont pas enregistrées. Se déconnecter ?')) return
+    if (dirtyTemplateIds.size > 0 && !window.confirm('Des modifications de liste ne sont pas enregistrées. Se déconnecter ?')) return
     setAuthError(null)
     const { error } = await client.auth.signOut()
     if (error) setAuthError('La déconnexion a échoué. Réessayez.')
@@ -266,12 +288,20 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
   async function signInWithGoogle() {
     setAuthBusy(true)
     setAuthError(null)
-    const { error } = await client.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: getAppUrl('/parent/templates') },
-    })
-    if (error) {
+    try {
+      const native = Capacitor.isNativePlatform()
+      const { data, error } = await client.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: getAuthRedirectUrl('/parent/templates'), skipBrowserRedirect: native },
+      })
+      if (error) throw error
+      if (native) {
+        if (!data.url) throw new Error('OAuth URL missing')
+        await Browser.open({ url: data.url })
+      }
+    } catch {
       setAuthError('La connexion Google est indisponible pour le moment.')
+    } finally {
       setAuthBusy(false)
     }
   }
@@ -281,6 +311,23 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
     setTemplates((current) => current.map((template) => template.id === templateId ? { ...template, ...updates } : template))
     setSaveError(null)
     setSaveSuccess(null)
+  }
+
+  async function createConnectedTemplate() {
+    if (!userId || savingTemplateId) return
+    setSavingTemplateId('creating')
+    setSaveError(null)
+    setSaveSuccess(null)
+    try {
+      const created = await createTemplate(client, userId)
+      setTemplates((current) => [...current, created])
+      setSelectedTemplateId(created.id)
+      setSaveSuccess('Liste créée. Ajoutez vos premières affaires.')
+    } catch {
+      setSaveError('La nouvelle liste n’a pas pu être créée. Réessayez.')
+    } finally {
+      setSavingTemplateId(null)
+    }
   }
 
   function updateItem(templateId: string, itemId: string, updates: Partial<Pick<TemplateItem, 'category' | 'label' | 'quantity' | 'required'>>) {
@@ -323,11 +370,11 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
       const version = await saveTemplate(client, template)
       setTemplates((current) => current.map((saved) => saved.id === templateId ? { ...saved, version } : saved))
       setDirtyTemplateIds((current) => { const next = new Set(current); next.delete(templateId); return next })
-      setSaveSuccess('Modèle enregistré sur votre compte.')
+      setSaveSuccess('Liste enregistrée sur votre compte.')
     } catch (error) {
       setSaveError(error instanceof Error && error.message.includes('changed')
-        ? 'Ce modèle a été modifié dans un autre onglet. Rechargez la page pour récupérer la dernière version.'
-        : 'Le modèle n’a pas pu être enregistré. Vérifiez les champs et réessayez.')
+        ? 'Cette liste a été modifiée dans un autre onglet. Rechargez la page pour récupérer la dernière version.'
+        : 'La liste n’a pas pu être enregistrée. Vérifiez les champs et réessayez.')
     } finally {
       setSavingTemplateId(null)
     }
@@ -373,10 +420,10 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
         <button type="button" onClick={() => void signOut()}><LogOut size={16} aria-hidden="true" /> Déconnexion</button>
       </div>
       {loadingTemplates ? (
-        <div className="template-account-state" role="status">Chargement des modèles…</div>
+        <div className="template-account-state" role="status">Chargement des listes…</div>
       ) : loadError ? (
         <section className="template-account-state" role="alert">
-          <h1>Bibliothèque indisponible</h1>
+          <h1>Listes indisponibles</h1>
           <p>{loadError}</p>
           <button className="button button--secondary" type="button" onClick={() => window.location.reload()}>Réessayer</button>
         </section>
@@ -385,6 +432,8 @@ function ConnectedTemplateLibrary({ client }: { client: Client }) {
           templates={templates}
           selectedTemplateId={selectedTemplateId}
           dirtyTemplateIds={dirtyTemplateIds}
+          creating={savingTemplateId === 'creating'}
+          onCreateTemplate={() => void createConnectedTemplate()}
           onSelect={(id) => { setSelectedTemplateId(id); setSaveError(null); setSaveSuccess(null) }}
           onUpdateTemplate={updateTemplate}
           onUpdateItem={updateItem}
